@@ -4,11 +4,15 @@
   end
 end
 
-template '/etc/default/corosync' do
-  source 'corosync.erb'
-  mode '0644'
-  owner 'root'
-  group 'root'
+case node[:platform]
+when 'ubuntu', 'debian'
+  template '/etc/default/corosync' do
+    source 'corosync.erb'
+    mode '0644'
+    owner 'root'
+    group 'root'
+  end
+when 'redhat', 'centos'
 end
 
 template '/etc/corosync/corosync.conf' do
@@ -20,6 +24,6 @@ end
 
 %w{corosync pacemaker}.each do |pkg|
   service pkg do
-    action :start
+    action [:enable, :start]
   end
 end

@@ -19,7 +19,12 @@ logging {
 	fileline: off
 	to_logfile: yes
 	to_syslog: yes
+<% case node[:platform] %>
+<% when 'ubuntu', 'debian' %>
 	logfile: /var/log/corosync/corosync.log
+<% when 'redhat', 'centos' %>
+	logfile: /var/log/cluster/corosync.log
+<% end %>
 	debug: off
 	timestamp: on
 	logger_subsys {

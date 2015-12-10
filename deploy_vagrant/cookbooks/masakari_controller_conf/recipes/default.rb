@@ -1,6 +1,12 @@
-dpkg_package "masakari_1.0.0-1_all" do
-  source '/home/stack/masakari/masakari_1.0.0-1_all.deb'
-  action :install
+case node[:platform]
+when 'ubuntu', 'debian'
+  dpkg_package "masakari_1.0.0-1_all" do
+    source '/home/stack/masakari/masakari_1.0.0-1_all.deb'
+    action :install
+  end
+when 'redhat', 'centos'
+  # TBD
+  directory '/etc/masakari' # fake
 end
 
 template '/etc/masakari/masakari.conf' do

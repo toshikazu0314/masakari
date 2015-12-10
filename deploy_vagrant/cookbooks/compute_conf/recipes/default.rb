@@ -5,9 +5,18 @@ template '/home/stack/devstack/local.conf' do
   group 'stack'
 end
 
-%w{nfs-common}.each do |pkg|
-  package pkg do
-    action :install
+case node[:platform]
+when 'ubuntu', 'debian'
+  %w{nfs-common}.each do |pkg|
+    package pkg do
+      action :install
+    end
+  end
+when 'redhat', 'centos'
+  %w{nfs-utils}.each do |pkg|
+    package pkg do
+      action :install
+    end
   end
 end
 
@@ -18,7 +27,6 @@ directory '/mnt/instances' do
   action :create
 end
 
-#device 'servername:/export/instances'
 mount '/mnt/instances' do
   device "#{node['compute_conf']['service_host']}:/export/instances"
   fstype 'nfs'

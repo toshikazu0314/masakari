@@ -5,9 +5,18 @@ template '/home/stack/devstack/local.conf' do
   group 'stack'
 end
 
-%w{nfs-kernel-server}.each do |pkg|
-  package pkg do
-    action :install
+case node[:platform]
+when 'ubuntu', 'debian'
+  %w{nfs-kernel-server}.each do |pkg|
+    package pkg do
+      action :install
+    end
+  end
+when 'redhat', 'centos'
+  %w{nfs-utils}.each do |pkg|
+    package pkg do
+      action :install
+    end
   end
 end
 
@@ -28,10 +37,20 @@ end
 template '/etc/exports' do
   source 'exports.erb'
   mode '0644'
-  owner 'stack'
-  group 'stack'
+  owner 'root'
+  group 'root'
 end
 
-service 'nfs-kernel-server' do
-  action :start
+case node[:platform]
+when 'ubuntu', 'debian'
+  service 'nfs-kernel-server' do
+    action [:enable, :start]
+  end
+when 'redhat', 'centos'
+  service 'rpcbind' do
+    action [:enable, :start]
+  end
+  service 'nfs-server' do
+    action [:enable, :start]
+  end
 end
