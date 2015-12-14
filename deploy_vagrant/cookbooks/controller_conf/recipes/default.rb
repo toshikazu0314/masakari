@@ -54,3 +54,8 @@ when 'redhat', 'centos'
     action [:enable, :start]
   end
 end
+
+execute 'exportfs' do
+  command 'exportfs -ra'
+  action :run
+end
